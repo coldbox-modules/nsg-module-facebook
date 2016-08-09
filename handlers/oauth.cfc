@@ -21,8 +21,16 @@ component {
 			structAppend(results,data);
 
 			structKeyRename(results,'id','referenceID');
-			structKeyRename(results,'first_name','first');
-			structKeyRename(results,'last_name','last');
+			if( structKeyExists( results, 'first_name' ) ){
+				structKeyRename( results, 'first_name', 'first' );
+			} else {
+				param name="results.first" default="";  	
+			}
+			if( structKeyExists( results, 'last_name' ) ){
+				structKeyRename( results, 'last_name', 'last' );
+			} else {
+				param name="results.last" default="";  	
+			}
 
 			results['socialservice'] = 'facebook';
 
@@ -46,7 +54,7 @@ component {
 					}
 				}
 
-				setNextEvent('facebook/oauth/activateUser')
+				setNextEvent('facebook/oauth/activateUser');
 			}else{
 				announceInterception( state='facebookLoginFailure', interceptData=results );
 				announceInterception( state='loginFailure', interceptData=results );
