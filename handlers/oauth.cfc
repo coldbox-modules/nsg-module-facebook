@@ -13,7 +13,7 @@ component {
 		if( event.getValue('id','') == 'activateUser' ){
 			var results = duplicate(session['facebookOAuth']);
 			// convert expires into a useful date/time
-			results['expiresAt'] = createODBCDateTime(now()+results['expires']/60/60/24);
+			results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);
 
 			var httpService = new http();
 				httpService.setURL('https://graph.facebook.com/me?client_id=#prc.facebookCredentials['appID']#&client_secret=#prc.facebookCredentials['appSecret']#&access_token=#session['facebookOAuth']['access_token']#');
@@ -46,13 +46,8 @@ component {
 			var results = httpService.send().getPrefix();
 
 			if( results['status_code'] == 200 ){
-				var myFields = listToArray(results['fileContent'],'&');
-
-				for(var i=1;i<=arrayLen(myFields);i++){
-					if(listLen(myFields[i],'=') eq 2){
-						session['facebookOAuth'][listFirst(myFields[i],'=')] = listLast(myFields[i],'=');
-					}
-				}
+				var myFields = deserializeJSON( results['fileContent'] );
+				structAppend( session['facebookOAuth'], myFields );
 
 				setNextEvent('facebook/oauth/activateUser');
 			}else{
