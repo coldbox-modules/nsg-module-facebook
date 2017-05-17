@@ -2,6 +2,7 @@ component {
 
 	function preHandler(event,rc,prc){
 		prc.facebookCredentials = getSetting('facebook')['oauth'];
+		param name="prc.facebookCredentials['fields']" default="name,email,first_name,last_name";
 		prc.facebookSettings = getModuleSettings('nsg-module-facebook')['oauth'];
 		if(!structKeyExists(session,'facebookOAuth')){
 			session['facebookOAuth'] = structNew();
