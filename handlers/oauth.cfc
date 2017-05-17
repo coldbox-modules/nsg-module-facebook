@@ -33,8 +33,6 @@ component {
 				param name="results.last" default="";  	
 			}
 			param name="results.email" default="";
-			writeDump( results );abort;
-			
 
 			results['socialservice'] = 'facebook';
 
