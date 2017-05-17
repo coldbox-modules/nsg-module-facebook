@@ -14,7 +14,11 @@ Setup & Installation
             appID           = "123456789",
             appSecret       = "987654321",
             scope           = "public_profile,email,user_friends",
-            responseType    = "code"
+            fields			= "name,email,first_name,last_name",
+            responseType    = "code",   
+			oauthVersion 		= 2,
+			authorizeRequestURL = "https://www.facebook.com/dialog/oauth",
+			tokenRequestURL 	= "https://graph.facebook.com/oauth/access_token"
         }
     }
 
