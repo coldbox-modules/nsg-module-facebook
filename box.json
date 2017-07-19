@@ -1,7 +1,7 @@
 {
     "name":"nsg-module-facebook",
     "slug":"nsg-module-facebook",
-    "version":"1.0.5",
+    "version":"1.1.0",
     "author":"Jeremy R DeYoung",
     "shortDescription":"Coldbox Module to allow Social Login via Facebook ",
     "location":"",
