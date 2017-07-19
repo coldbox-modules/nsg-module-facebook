@@ -47,7 +47,8 @@
     ],
     "dependencies":{
         "nsg-module-oauth":"^1.0.0",
-        "nsg-module-security":"^1.0.6"
+        "nsg-module-security":"^1.0.6",
+        "cbstorages":"1.3.0+14"
     },
     "devDependencies":{
 
