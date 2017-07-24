@@ -1,20 +1,20 @@
 component {
 
-	property name="sessionStorage" 	inject="sessionStorage@cbstorages";
+	property name="cacheStorage" 	inject="cacheStorage@cbstorages";
 
 	function preHandler(event,rc,prc){
 		prc.facebookCredentials = getSetting('facebook')['oauth'];
 		param name="prc.facebookCredentials['fields']" default="name,email,first_name,last_name";
 		prc.facebookSettings = getModuleSettings('nsg-module-facebook')['oauth'];
-		if( !sessionStorage.exists( 'facebookOAuth' ) ){
-			sessionStorage.setVar( 'facebookOAuth', structNew() );
+		if( !cacheStorage.exists( 'facebookOAuth' ) ){
+			cacheStorage.setVar( 'facebookOAuth', structNew() );
 		}
 	}
 
 	function index(event,rc,prc){
 		flash.keep();
 		if( event.getValue('id','') == 'activateUser' ){
-			var results = duplicate( sessionStorage.getVar( 'facebookOAuth', structNew() ) );
+			var results = duplicate( cacheStorage.getVar( 'facebookOAuth', structNew() ) );
 			
 			// convert expires into a useful date/time
 			results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);
@@ -44,7 +44,7 @@ component {
 			setNextEvent(view=prc.facebookCredentials['loginSuccess'],ssl=( cgi.server_port == 443 ? true : false ));
 
 		}else if( event.valueExists('code') ){
-			results = sessionStorage.getVar( 'facebookOAuth' );
+			results = cacheStorage.getVar( 'facebookOAuth' );
 			results['code'] = event.getValue('code');
 
 			var httpService = new http();
@@ -54,7 +54,7 @@ component {
 				var myFields = listToArray(results['fileContent'],'&');
 				myFields = deserializeJSON( results['fileContent'] );
 				structAppend( results, myFields );
-				sessionStorage.setVar( 'facebookOAuth', results );
+				cacheStorage.setVar( 'facebookOAuth', results );
 				setNextEvent('facebook/oauth/activateUser');
 			}else{
 				announceInterception( state='facebookLoginFailure', interceptData=results );
