@@ -16,8 +16,16 @@ component {
 		if( event.getValue('id','') == 'activateUser' ){
 			var results = duplicate( cacheStorage.getVar( 'facebookOAuth', structNew() ) );
 			
-			// convert expires into a useful date/time
-			results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);
+			if( structKeyExists( results, "expires_in" ) ){
+				// convert expires into a useful date/time
+				results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);	
+			} else {
+				if( cgi.remote_addr eq "127.0.0.1" || cgi.remote_addr eq "174.135.66.53" || remote_addr eq "12.226.165.226" ){
+					writeDump( results );abort;
+				} else {
+					results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);
+				}
+			}
 
 			var httpService = new http();
 				httpService.setURL('https://graph.facebook.com/me?fields=#prc.facebookCredentials['fields']#&client_id=#prc.facebookCredentials['appID']#&client_secret=#prc.facebookCredentials['appSecret']#&access_token=#results['access_token']#');
