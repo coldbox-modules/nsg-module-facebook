@@ -3,7 +3,7 @@ component {
 	property name="cacheStorage" 	inject="cacheStorage@cbstorages";
 
 	function preHandler(event,rc,prc){
-		prc.facebookCredentials = getSetting('facebook')['oauth'];
+		prc.facebookCredentials = getModuleSettings('nsg-module-facebook').OAuth;
 		param name="prc.facebookCredentials['fields']" default="name,email,first_name,last_name";
 		prc.facebookSettings = getModuleSettings('nsg-module-facebook')['oauth'];
 		if( !cacheStorage.exists( 'facebookOAuth' ) ){
