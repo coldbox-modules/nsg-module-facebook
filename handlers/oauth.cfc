@@ -3,9 +3,8 @@ component {
 	property name="cacheStorage" 	inject="cacheStorage@cbstorages";
 
 	function preHandler(event,rc,prc){
-		prc.facebookCredentials = getSetting('facebook')['oauth'];
-		param name="prc.facebookCredentials['fields']" default="name,email,first_name,last_name";
 		prc.facebookSettings = getModuleSettings('nsg-module-facebook')['oauth'];
+		param name="prc.facebookSettings['fields']" default="name,email,first_name,last_name";
 		if( !cacheStorage.exists( 'facebookOAuth' ) ){
 			cacheStorage.setVar( 'facebookOAuth', structNew() );
 		}
@@ -20,7 +19,7 @@ component {
 			results['expiresAt'] = createODBCDateTime(now()+results['expires_in']/60/60/24);	
 
 			var httpService = new http();
-				httpService.setURL('https://graph.facebook.com/me?fields=#prc.facebookCredentials['fields']#&client_id=#prc.facebookCredentials['appID']#&client_secret=#prc.facebookCredentials['appSecret']#&access_token=#results['access_token']#');
+				httpService.setURL('https://graph.facebook.com/me?fields=#prc.facebookSettings['fields']#&client_id=#prc.facebookSettings['appID']#&client_secret=#prc.facebookSettings['appSecret']#&access_token=#results['access_token']#');
 			var data = deserializeJSON(httpService.send().getPrefix()['fileContent']);
 			structAppend(results,data);
 
@@ -41,14 +40,14 @@ component {
 
 			announceInterception( state='facebookLoginSuccess', interceptData=results );
 			announceInterception( state='loginSuccess', interceptData=results );
-			setNextEvent(view=prc.facebookCredentials['loginSuccess'],ssl=( cgi.server_port == 443 ? true : false ));
+			setNextEvent(view=prc.facebookSettings['loginSuccess'],ssl=( cgi.server_port == 443 ? true : false ));
 
 		}else if( event.valueExists('code') ){
 			results = cacheStorage.getVar( 'facebookOAuth' );
 			results['code'] = event.getValue('code');
 
 			var httpService = new http();
-				httpService.setURL('#prc.facebookSettings['tokenRequestURL']#?client_id=#prc.facebookCredentials['appID']#&redirect_uri=#urlEncodedFormat(prc.facebookCredentials['redirectURL'])#&client_secret=#prc.facebookCredentials['appSecret']#&code=#results['code']#');
+				httpService.setURL('#prc.facebookSettings['tokenRequestURL']#?client_id=#prc.facebookSettings['appID']#&redirect_uri=#urlEncodedFormat(prc.facebookSettings['redirectURL'])#&client_secret=#prc.facebookSettings['appSecret']#&code=#results['code']#');
 			var results = httpService.send().getPrefix();
 			if( results['status_code'] == 200 ){
 				var myFields = listToArray(results['fileContent'],'&');
@@ -64,7 +63,7 @@ component {
 
 		}else{
 
-			location(url="#prc.facebookSettings['authorizeRequestURL']#?client_id=#prc.facebookCredentials['appID']#&redirect_uri=#urlEncodedFormat(prc.facebookCredentials['redirectURL'])#&scope=#prc.facebookCredentials['scope']#&response_type=#prc.facebookCredentials['responseType']#",addtoken=false);
+			location(url="#prc.facebookSettings['authorizeRequestURL']#?client_id=#prc.facebookSettings['appID']#&redirect_uri=#urlEncodedFormat(prc.facebookSettings['redirectURL'])#&scope=#prc.facebookSettings['scope']#&response_type=#prc.facebookSettings['responseType']#",addtoken=false);
 		}
 	}
 
